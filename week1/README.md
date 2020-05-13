@@ -23,7 +23,7 @@ Purity refers to lack of side effects
 > % assignment (binding of variable)
 > A = 1.
 1
-> % "forget" all assignments
+> % "forget" all assignments (works only in the shell)
 > f().
 > % quit
 > q().
@@ -230,3 +230,52 @@ Functions
 > (fun(X)->X+2 end)(40).
 42
 ```
+
+## Variables
+
+```erlang
+> A=3+2.
+5
+> A=4.
+** exception error: no match of right hand side value 4
+> A=5.
+5
+```
+
+The first statement acts to bind A with value 5. Once bound, the = sign functions as a "check".<br>
+This makes them not "variables", but named values.
+Can do this for multiple variables at a time
+
+```erlang
+> {A,B}={3,4}.
+{3,4}
+> {A,B}={3,2}.
+** exception error: no match of right hand side value {3,2}
+```
+
+If any of the values don't match, then an exception is raised.
+
+### Functions with multiple clauses
+
+```erlang
+is_zero(0) ->
+	true;
+is_zero(X) ->
+	false.
+```
+
+This is similar to a notation in math.<br>
+The inputs are "pattern-matched" against the definition of the function clauses.
+
+.e.g look at the `xor` implementation below
+
+```erlang
+do_xor(X,X) ->
+	false;
+do_xor(_,_) ->
+	true.
+```
+
+These are matched sequentially, so if the the two arguments passed to `do_xor` are not the same, then it will move the the next clause.
+
+Interesting note - these functions cannot be defined as is in the shell, [because the shell only evaluates "expressions"](https://stackoverflow.com/a/2075634) and function definitions are not expressions, but "forms".
