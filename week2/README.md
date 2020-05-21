@@ -18,3 +18,27 @@ fact:fac(-2).
 ### Tail Recursion
 
 Absolves the need for maintaining intermediate results, acting more like a loop. See file `tail.erl`
+
+
+---
+
+### Complex Pattern Matching
+
+Tuples used to represent complex types.
+
+```erlang
+{circle, {X, Y}, R}.
+{rectangle, {X,Y}, H, W}.
+```
+
+
+Pattern matching is used to distinguish between different types. <br>
+And also extract components in each case
+
+
+```erlang
+area({circle, {X,Y}, R}) ->
+	math:pi()*R*R;
+area({rectangle, {X,Y}, H, W}) ->
+	H*W.
+```
