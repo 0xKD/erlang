@@ -42,3 +42,28 @@ area({circle, {X,Y}, R}) ->
 area({rectangle, {X,Y}, H, W}) ->
 	H*W.
 ```
+
+
+### Collections
+
+List is a collection of elements:
+
+```erlang
+[2,3,4].
+[3,2,4].
+[].
+```
+
+`[X|Xs]` matches a non-empty list (used presciently in `ex1.erl`). <br>
+`X` matches the head of the list (one element), `Xs` holds the tail (remaining elements as a list)
+
+```erlang
+head([X|_Xs]) -> X.
+tail([_X|Xs]) -> Xs.
+
+% demonstrating function composition
+second(Xs) -> head(tail(Xs)).
+
+% alternatively
+second([_X1,X2|_Xs]) -> X2.
+```
