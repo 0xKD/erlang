@@ -145,3 +145,22 @@ Going deeper with the "pipe" (cons?) operator
 > Y.
 [4]
 ```
+
+---
+
+### Spec
+
+Introduced to the `spec` keyword. Does not enforce types, only meant to serve as reference and for documentation.
+
+```erlang
+-spec take(integer(), [T]) -> [T].
+```
+
+Simialar to type hints from Python? Erlang, after all, is dynamically typed.
+
+#### Misc
+
+Approach to solving problems — divide and conquer.
+
+- Step 1. "If only I had a function to do X, I could define the answer"
+- Step 2. Define X. GOTO Step 1
