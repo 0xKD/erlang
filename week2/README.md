@@ -146,7 +146,11 @@ Going deeper with the "pipe" (cons?) operator
 [4]
 ```
 
----
+From the course
+
+> It’s possible to put any values in [ | ], but in general these are called improper lists. To make use of lists, the argument on the right-hand side needs to be a (proper) list too.
+
+
 
 ### Spec
 
