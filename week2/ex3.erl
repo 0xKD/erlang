@@ -1,5 +1,5 @@
 -module(ex3).
--export([join/2,concat/1,member/2,perms/1,perms2/1,picker/2,appender/2]).
+-export([join/2,concat/1,member/2,perms/1,quicksort/1]).
 
 % join two lists, like the ++ operator
 join([], [])		-> [];
@@ -15,7 +15,7 @@ concat([X|Xs])	-> join(X, concat(Xs)).
 
 
 % check if item is part of a list
-member(_, [])		-> false; member(X, [X|_])	-> true;	
+member(_, [])		-> false; member(X, [X|_])	-> true;
 member(X, [_|Xs])	-> member(X, Xs).
 
 
@@ -35,3 +35,9 @@ appender(H, Xs)		-> [[H]++X || X <- Xs].
 % picker([1,2,3], []) => [[1,2,3], [2,3,1], [3,2,1]]
 picker([], _S)		-> [];
 picker([X|Xs], S)	-> [[X|Xs++S]]++picker(Xs, [X]++S).
+
+
+% this is not a "stable sort" - does not preserve ordering among values that are same
+quicksort([])		-> [];
+quicksort([X|Xs])	->
+	quicksort([ E || E <- Xs, E =< X])++[X]++quicksort([E || E <- Xs, E > X]).
