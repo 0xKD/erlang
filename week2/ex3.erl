@@ -1,5 +1,5 @@
 -module(ex3).
--export([join/2,concat/1,member/2,perms/1,quicksort/1,mergesort/1]).
+-export([join/2,concat/1,member/2,perms/1,quicksort/1,mergesort/1,insort/1]).
 
 % join two lists, like the ++ operator
 join([], [])		-> [];
@@ -69,3 +69,13 @@ splitl([X|Xs], MP, A)	-> splitl(Xs, MP-1, A++[X]).
 % take elements from right side of list considering midpoint MP
 splitr(Xs, 0)		-> Xs;
 splitr([_|Xs], MP)	-> splitr(Xs, MP-1).
+
+
+% insertion sort
+insort([])			-> [];
+insort([X|Xs])			-> insert(X, insort(Xs), []).
+
+% insert X in the correction position in the list ([Y|Ys])
+insert(X, [], A)		-> A++[X];
+insert(X, [Y|Ys], A) when X=<Y	-> A++[X,Y|Ys];
+insert(X, [Y|Ys], A) when X>Y	-> insert(X, Ys, A++[Y]).
