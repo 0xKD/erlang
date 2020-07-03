@@ -1,5 +1,5 @@
 -module(ex3).
--export([join/2,concat/1,member/2,perms/1,quicksort/1]).
+-export([join/2,concat/1,member/2,perms/1,quicksort/1,mergesort/1]).
 
 % join two lists, like the ++ operator
 join([], [])		-> [];
@@ -41,3 +41,31 @@ picker([X|Xs], S)	-> [[X|Xs++S]]++picker(Xs, [X]++S).
 quicksort([])		-> [];
 quicksort([X|Xs])	->
 	quicksort([ E || E <- Xs, E =< X])++[X]++quicksort([E || E <- Xs, E > X]).
+
+
+
+
+% mergesort
+mergesort([])		-> [];
+mergesort(Xs)		->
+	L=length(Xs), MP=L div 2,
+	case L of
+		1	-> Xs;
+		_	-> merge(mergesort(splitl(Xs, MP, [])), mergesort(splitr(Xs, MP)), [])
+	end.
+
+% for the "combine" aspect of mergesort
+merge([], Ys, M)	-> M++Ys;
+merge(Xs, [], M)	-> M++Xs;
+merge([X|Xs], [Y|Ys], M) when X=<Y ->
+	merge(Xs, [Y|Ys], M++[X]);
+merge([X|Xs], [Y|Ys], M) when X>Y ->
+	merge([X|Xs], Ys, M++[Y]).
+
+% take elements from left side of list considering midpoint MP
+splitl(_, 0, A)		-> A;
+splitl([X|Xs], MP, A)	-> splitl(Xs, MP-1, A++[X]).
+
+% take elements from right side of list considering midpoint MP
+splitr(Xs, 0)		-> Xs;
+splitr([_|Xs], MP)	-> splitr(Xs, MP-1).
