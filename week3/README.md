@@ -49,3 +49,26 @@ Test general property (behaviour?) of the function, rather than fixed input and 
 Libraries that do this:
 - [QuickCheck](https://gist.github.com/efcasado/3df8f3f1e33eaa488019)
 - [PropEr](https://github.com/proper-testing/proper)
+
+
+## Types
+
+The instructor refers to languages with compile time type checks as **strongly** typed. I have been referring to such languages as **statically** typed and that's what I will use here as well.
+
+The reason for not using the former term is that Erlang (and similar languages) would be categorized as **weakly** typed, which is a term reserved for languages like JavaScript (which will automatically cast data types as it sees fit... during runtime).
+
+So, in summary, C/C++/Haskell/OCaml are **statically** (and of course strongly) typed. Erlang,Python,Ruby are **dynamically** (but also strongly) typed. These don't have a way of enforcing type constraints at compile time, so some kind of errors can only be detected at runtime.
+
+
+With the minutiae out the way, Erlang is similar to Python. In that it has no way of enforcing type constraints, but offers type **hints** (or **annotations**) using `-spec`. Some type errors can also be checked statically. Tools used here are [Typer](http://erlang.org/doc/man/typer.html "Typer") and [Dialyzer](http://erlang.org/doc/apps/dialyzer/dialyzer_chapter.html "Dialyzer").
+
+### Types in Erlang
+
+- **Numbers** - `integer()`, `float()`
+- **Atoms** - `atom()`
+- **Booleans** - `boolean()`
+- **Tuples and Lists** - `list(T)`,`[T]`, `{T1,...,TN}`
+- **Strings** - `string()`
+- **Functions** - `fun()`, `fun((T1,...,TN) -> T)`
+
+Using `-spec` does not restrict the usage of the function it is defined on. Typer will only throw an error if the spec is not in sync with what it has inferrred.
