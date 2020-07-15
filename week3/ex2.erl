@@ -2,25 +2,28 @@
 -export([filler/2]).
 
 
-% Define a function that takes an input file in Erlang
+% "Define a function that takes an input file in Erlang
 % as a string (list) of characters. and a line length len
 % (a positive integer) and which returns a list of lines,
 % each of which is filled to include the maximum number
-% of words up to the overall length.
-% ----
+% of words up to the overall length."
 % I've probably made this more complicated than it needs to be
-filler([], _) -> [];
-filler(Text, MaxLength) ->
+filler([], _, AccText) -> AccText;
+filler(Text, MaxLength, AccText) ->
     {Taken, Rest} = take_chars(trim(Text), MaxLength),
-    [Taken|filler(Rest, MaxLength)].
+    case Taken of
+      [] ->
+        {Taken2, Rest2} = take_first(trim(Rest)),
+        filler(Rest2, MaxLength, AccText++[Taken2]);
+      _ -> filler(Rest, MaxLength, AccText++[Taken])
+    end.
+filler(Text, MaxLength) ->
+    filler(Text, MaxLength, []).
 
-% TODO: handle unending case where len(Rest) > MaxLength
 
 % Take a (complete, no broken words) string of (at most) MaxLength
 % characters from given string.
 % The function will return both the "taken" and remainder strings.
-% We do this by building a buffer, and committing buffer to final (return)
-% value when a space is encountered and buffer length + return value length <= MaxLength
 take_chars(Text, MaxLength, Buffer, BufferLength, Retval, RetvalLength)
   when RetvalLength == MaxLength ; BufferLength+RetvalLength > MaxLength ->
     {Retval, Buffer++Text};
@@ -28,10 +31,12 @@ take_chars(Text, MaxLength, Buffer, BufferLength, Retval, RetvalLength)
 take_chars([], MaxLength, Buffer, BufferLength, Retval, RetvalLength)
   when BufferLength+RetvalLength >= MaxLength ->
     {Retval, Buffer};
-take_chars([], _MaxLength, Buffer, _BufferLength, Retval, _RetvalLength) ->
-    % this section seems like it could be handled in one of the clauses below,
-    % in the one which performs (Retval++[32|Buffer])
-    {Retval++[32|Buffer], []};
+take_chars([], _MaxLength, Buffer, _BufferLength, Retval, RetvalLength) ->
+    % I smell some amount of duplication here (w.r.t similar clauses below)
+    case RetvalLength of
+      0 -> {Buffer, []};
+      _ -> {Retval++[32|Buffer], []}
+    end;
 take_chars([NextChar|Text], MaxLength, Buffer, BufferLength, _, RetvalLength)
   when BufferLength+RetvalLength =< MaxLength, NextChar == 32, RetvalLength == 0 ->
     take_chars(Text, MaxLength, [], 0, Buffer, BufferLength);
@@ -41,32 +46,57 @@ take_chars([NextChar|Text], MaxLength, Buffer, BufferLength, Retval, RetvalLengt
 take_chars([NextChar|Text], MaxLength, Buffer, BufferLength, Retval, RetvalLength)
   when BufferLength+RetvalLength =< MaxLength ->
     take_chars(Text, MaxLength, Buffer++[NextChar], BufferLength+1, Retval, RetvalLength).
-
 take_chars(Text, 0) ->
     {[], Text};
 take_chars([NextChar|Text], MaxLength) ->
     take_chars(Text, MaxLength, [NextChar], 1, [], 0).
 
+
+% In cases where nothing of MaxLength can be "taken",
+% this function will return part of the string until the first space
+take_first([], AccText) ->
+  {AccText, []};
+take_first([NextChar|Text], AccText)
+  when NextChar == 32 ->
+  {AccText, Text};
+take_first([NextChar|Text], AccText) ->
+  take_first(Text, AccText++[NextChar]).
+take_first(Text) ->
+  take_first(Text, []).
+
+
+trim(Xs) ->
+  trim_spaces(replace_newlines(Xs)).
+
+
 % remove extraneous spaces from the string
 % (32 == space character)
-trim(Text, PreviousChar, Accumulated)
+trim_spaces(Text, PreviousChar, Accumulated)
   when Text == [32]; Text == [] ->
     case PreviousChar of
         [] -> Accumulated;
         32 -> Accumulated;
         _ -> Accumulated++[PreviousChar]
     end;
-trim([NextChar|Text], PreviousChar, Accumulated)
+trim_spaces([NextChar|Text], PreviousChar, Accumulated)
     when PreviousChar == 32, NextChar == 32 ->
-    trim(Text, NextChar, Accumulated);
-trim([NextChar|Text], PreviousChar, Accumulated) ->
+    trim_spaces(Text, NextChar, Accumulated);
+trim_spaces([NextChar|Text], PreviousChar, Accumulated) ->
     case PreviousChar of
-        [] -> trim(Text, NextChar, Accumulated);
-        _ -> trim(Text, NextChar, Accumulated++[PreviousChar])
+        [] -> trim_spaces(Text, NextChar, Accumulated);
+        _ -> trim_spaces(Text, NextChar, Accumulated++[PreviousChar])
     end.
+trim_spaces([]) -> [];
+trim_spaces([32|Xs]) ->
+    trim_spaces(Xs);
+trim_spaces([X|Xs]) ->
+    trim_spaces(Xs, X, []).
 
-trim([]) -> [];
-trim([32|Xs]) ->
-    trim(Xs);
-trim([X|Xs]) ->
-    trim(Xs, X, []).
+
+replace_newlines([], AccXs) -> AccXs;
+replace_newlines([10|Xs], AccXs) ->
+  replace_newlines(Xs, AccXs++[32]);
+replace_newlines([X|Xs], AccXs) ->
+  replace_newlines(Xs, AccXs++[X]).
+replace_newlines(Xs) ->
+  replace_newlines(Xs, []).
