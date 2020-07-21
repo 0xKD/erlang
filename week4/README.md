@@ -74,3 +74,48 @@ We can also use in-line lambda functions. This removes the need for defining the
 ``` erlang
 sum(Xs) -> reduce(fun(X,Y) -> X+Y end, 0, Xs).
 ```
+
+
+## Functions as results
+
+### "Partially applied" functions
+
+Similar to Python's `functools.partial` which is useful in certain sitations.
+These return functions as results.<br>
+
+``` erlang
+adder(X) ->
+  fun(Y) -> X+Y end.
+
+addOneToAll(Xs) ->
+  lists:map(adder(1), Xs).
+```
+
+### Compositing functions
+
+Applying function over the results of another one. Here, `G` is applied to the result of `F` on `X`.
+
+``` erlang
+compose(F,G) ->
+  fun(X) -> G(F(X)) end.
+```
+
+Haven't really used or observed such a pattern at least when writing Python code, perhaps it has its place in Erlang.
+
+---
+
+#### Misc - Functions in the shell
+
+Functions defined in the shell allow for more than I thought was possible.
+
+Pattern matching is possible
+
+``` erlang
+IsEqual = fun(X,X) -> true; (X,Y) -> false end.
+```
+
+Recursion can be performed by naming the function (the function is still referred to using `Factorial` though, not `Fact` in the below example)
+
+``` erlang
+Factorial = fun Fact(0) -> 1; Fact(X) -> X*Fact(X-1) end.
+```
