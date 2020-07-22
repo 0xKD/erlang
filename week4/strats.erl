@@ -9,12 +9,27 @@
 % You could also choose to modify this so that the game is ended when one player
 % is more than M points ahead of the other, for example.
 play_two(_,_,PlaysL,PlaysR,0) ->
-   dummy;
+    % could also accumulate the result instead of computing at the end
+    display_tournament_result(PlaysL, PlaysR);
 play_two(StrategyL,StrategyR,PlaysL,PlaysR,N) ->
-   dummy.
+    PlayL=StrategyL(PlaysR),
+    PlayR=StrategyR(PlaysL),
+    Result=rps:result(PlayL, PlayR),
+    display_result(Result),
+    play_two(StrategyL, StrategyR, [PlayL|PlaysL], [PlayR|PlaysR], N-1).
 % play one strategy against another, for N moves.
 play_two(StrategyL,StrategyR,N) ->
     play_two(StrategyL,StrategyR,[],[],N).
+
+display_result(0) ->
+    io:format("Result: draw!~n");
+display_result(1) ->
+    io:format("Result: PlayerL wins!~n");
+display_result(-1) ->
+    io:format("Result: PlayerR wins!~n").
+
+display_tournament_result(PlaysL, PlaysR) ->
+    io:format("Tournament Result: ~p~n", [rps:tournament(PlaysL,PlaysR)]).
 
 
 % interactively play against a strategy, provided as argument.
@@ -53,13 +68,6 @@ enum(1) ->
     paper;
 enum(2) ->
     scissors.
-
-val(rock) ->
-    0;
-val(paper) ->
-    1;
-val(scissors) ->
-    2.
 
 % strategies (default)
 echo([]) ->
@@ -104,7 +112,7 @@ rand(_) ->
 % cycles through the three choices in some order;
 cycle(Plays) ->
     % will cycle through (rock,paper,scissors,...) repeatedly
-    enum(lists:length(Plays) rem 3).
+    enum(length(Plays) rem 3).
 
 % (3) "apply an analysis to the previous plays and choose the least frequent,
 % assuming that in the long run your opponent will play each choice equally"
@@ -147,6 +155,8 @@ find_most_played(MovesCounter) ->
 % (4) "apply an analysis to the previous plays and choose the most frequent,
 % assuming that in the long run your opponent is going to play that
 % choice more often than the others."
+maximizer([]) ->
+    rand([]);
 maximizer(Moves) ->
     maximize(counter(Moves)).
 
