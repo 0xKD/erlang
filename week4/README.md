@@ -119,3 +119,50 @@ Recursion can be performed by naming the function (the function is still referre
 ``` erlang
 Factorial = fun Fact(0) -> 1; Fact(X) -> X*Fact(X-1) end.
 ```
+
+
+#### Closing notes
+
+- Functions can be compared but the syntax is a bit different
+
+.e.g for the given module
+
+``` erlang
+-module(comp).
+-export([double/1,is_even/1]).
+
+double(N) -> N*2.
+is_even(N) -> N rem 2 == 0.
+```
+
+Comparison works like this (similar to how functions are passed around, with `fun` and arity specified)
+
+``` erlang
+> c(comp).
+{ok,comp}
+> fun comp:double/1 == fun comp:is_even/1.
+false
+```
+
+- Atoms can not only be compared for equality, but also ordered!
+
+``` erlang
+> foo=='foo'.
+true
+> foo>bar.
+true
+```
+
+- There are a couple different equality operators: `==` and `=:=`, both functioning differently.
+
+`=:=` is a stricter one, returning true only if both values being compared are identical in type. Analogous to pattern matching.<br>
+`==` transforms both values being compared into the same format to match. Reminds me of JavaScript's `==` v/s. `===`.
+
+``` erlang
+> 1==1.0.
+true
+> 1=:=1.0.
+false
+> " "==[32.0].
+true
+```
